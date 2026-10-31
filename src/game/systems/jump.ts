@@ -30,5 +30,8 @@ export function isJumpAllowed(
   const withinCoyote = now - lastGroundedAt <= coyoteMs;
   const withinBuffer = now - jumpPressedAt <= jumpBufferMs;
 
-  return withinCoyote || withinBuffer;
+  // Both windows must overlap. A jump pressed mid-air only fires once the
+  // player lands, because landing refreshes lastGroundedAt while the buffer is
+  // still counting down.
+  return withinCoyote && withinBuffer;
 }

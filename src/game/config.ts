@@ -1,8 +1,12 @@
 import Phaser from 'phaser';
 
-import { COLORS, GAME_HEIGHT, GAME_WIDTH } from './constants';
+import { COLORS, GAME_HEIGHT, GAME_WIDTH, PHYSICS } from './constants';
 import { BootScene } from './scenes/BootScene';
+import { HowToScene } from './scenes/HowToScene';
+import { HudScene } from './scenes/HudScene';
 import { LevelScene } from './scenes/LevelScene';
+import { LevelSelectScene } from './scenes/LevelSelectScene';
+import { MenuScene } from './scenes/MenuScene';
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -19,9 +23,9 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
   physics: {
     default: 'arcade',
     arcade: {
-      gravity: { x: 0, y: 1200 },
+      gravity: { x: 0, y: PHYSICS.gravityY },
       debug: false,
     },
   },
-  scene: [BootScene, LevelScene],
+  scene: [BootScene, MenuScene, LevelSelectScene, HowToScene, LevelScene, HudScene],
 };

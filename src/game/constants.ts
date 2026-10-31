@@ -10,12 +10,49 @@ export const GAME_HEIGHT = 270;
 /** Size of one level tile in world units. */
 export const TILE_SIZE = 16;
 
-/** Palette shared by scenes so the placeholder art stays coherent. */
+/** Player sprite footprint in world units. */
+export const PLAYER_WIDTH = 12;
+export const PLAYER_HEIGHT = 16;
+
+/** Physics tuning shared by the player and the level scene. */
+export const PHYSICS = {
+  gravityY: 1200,
+  maxSpeedX: 120,
+  acceleration: 900,
+  airAcceleration: 620,
+  drag: 900,
+  jumpVelocity: -340,
+  jumpCut: 0.45,
+  maxFallSpeed: 520,
+} as const;
+
 export const COLORS = {
+  bgDeep: '#070a11',
   background: '#10131a',
-  grid: '#1a2030',
+  panel: 0x161d2c,
+  panelEdge: 0x35425f,
+  grid: 0x1a2030,
+  text: '#e6edf3',
+  muted: '#7d8899',
   playerOne: '#4cc9f0',
   playerTwo: '#f4a261',
-  text: '#e6edf3',
-  textMuted: '#7d8899',
+  accent: '#ffd166',
+  danger: '#ef476f',
+  success: '#06d6a0',
+  wall: 0x232d44,
+  wallTop: 0x3b4a6b,
+} as const;
+
+export const SCENES = {
+  boot: 'Boot',
+  menu: 'Menu',
+  levelSelect: 'LevelSelect',
+  howTo: 'HowTo',
+  level: 'Level',
+  hud: 'Hud',
+} as const;
+
+export const STORAGE_KEYS = {
+  progress: 'coop-puzzle:progress-v1',
+  muted: 'coop-puzzle:muted-v1',
 } as const;

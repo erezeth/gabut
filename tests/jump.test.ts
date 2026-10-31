@@ -15,8 +15,12 @@ describe('isJumpAllowed', () => {
     expect(isJumpAllowed(1000, 1000 - (COYOTE_MS + 1), 1000 - (JUMP_BUFFER_MS + 1))).toBe(false);
   });
 
-  it('fires a buffered jump pressed just before landing', () => {
-    expect(isJumpAllowed(1000, Number.NEGATIVE_INFINITY, 1000 - (JUMP_BUFFER_MS - 1))).toBe(true);
+  it('fires a buffered jump on the frame the player lands', () => {
+    expect(isJumpAllowed(1000, 1000, 1000 - (JUMP_BUFFER_MS - 1))).toBe(true);
+  });
+
+  it('never fires a buffered jump while still in mid-air', () => {
+    expect(isJumpAllowed(1000, 800, 1000 - (JUMP_BUFFER_MS - 1))).toBe(false);
   });
 
   it('ignores a jump buffered too long ago', () => {
