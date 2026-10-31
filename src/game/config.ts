@@ -1,7 +1,8 @@
 import Phaser from 'phaser';
 
 import { COLORS, GAME_HEIGHT, GAME_WIDTH } from './constants';
-import { SandboxScene } from './scenes/SandboxScene';
+import { BootScene } from './scenes/BootScene';
+import { LevelScene } from './scenes/LevelScene';
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -18,9 +19,9 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
   physics: {
     default: 'arcade',
     arcade: {
-      gravity: { x: 0, y: 0 },
+      gravity: { x: 0, y: 1200 },
       debug: false,
     },
   },
-  scene: [SandboxScene],
+  scene: [BootScene, LevelScene],
 };

@@ -6,3 +6,7 @@ coverage/
 *.log
 .DS_Store
 Thumbs.db
+
+# Only npm is used in this project
+pnpm-lock.yaml
+yarn.lock
