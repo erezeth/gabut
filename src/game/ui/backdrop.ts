@@ -49,7 +49,11 @@ export function addBackdrop(scene: Phaser.Scene): void {
 }
 
 /** Draws a thin horizontal rule with a diamond in the middle. */
-export function addDivider(scene: Phaser.Scene, y: number, width = 320): Phaser.GameObjects.Graphics {
+export function addDivider(
+  scene: Phaser.Scene,
+  y: number,
+  width = 320,
+): Phaser.GameObjects.Graphics {
   const graphics = scene.add.graphics();
   const half = width / 2;
   graphics.lineStyle(1, 0x35425f, 0.7);

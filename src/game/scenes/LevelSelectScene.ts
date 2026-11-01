@@ -3,12 +3,7 @@ import Phaser from 'phaser';
 import { COLORS, GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { LEVELS } from '../level/levels';
 import { audio } from '../systems/audio';
-import {
-  isUnlocked,
-  loadProgress,
-  saveProgress,
-  type Progress,
-} from '../systems/progress';
+import { isUnlocked, loadProgress, saveProgress, type Progress } from '../systems/progress';
 import { NavList, type NavItem } from '../ui/NavList';
 import { addBackdrop } from '../ui/backdrop';
 import { addPanel, formatTime, textStyle } from '../ui/theme';
@@ -136,7 +131,7 @@ export class LevelSelectScene extends Phaser.Scene {
 
     const left = `${number}  ${name}`;
     const dots = '.'.repeat(Math.max(2, 24 - left.length));
-    const right = locked ? 'LOCKED'.padStart(8) : (best ? formatTime(best.timeMs) : '--:--.--');
+    const right = locked ? 'LOCKED'.padStart(8) : best ? formatTime(best.timeMs) : '--:--.--';
 
     return `${left} ${dots} ${right}`;
   }

@@ -234,7 +234,13 @@ export class LevelScene extends Phaser.Scene {
       .setDepth(-20);
 
     this.add
-      .tileSprite(-pad / 2, -pad / 2, this.level.width + pad, this.level.height + pad, TEX.background)
+      .tileSprite(
+        -pad / 2,
+        -pad / 2,
+        this.level.width + pad,
+        this.level.height + pad,
+        TEX.background,
+      )
       .setOrigin(0)
       .setDepth(-19)
       .setAlpha(0.45);
@@ -536,7 +542,7 @@ export class LevelScene extends Phaser.Scene {
       const spawn = this.crateSpawns[index];
       if (!spawn) return;
 
-      crate.body.reset(spawn.x, spawn.y);
+      (crate.body as Phaser.Physics.Arcade.Body).reset(spawn.x, spawn.y);
       crate.setVelocity(0, 0);
       audio.play('respawn');
       this.sparkles?.explode(10, spawn.x, spawn.y);
@@ -651,10 +657,7 @@ export class LevelScene extends Phaser.Scene {
   }
 
   private actorRects(): Rect[] {
-    return [
-      ...this.playerRects(),
-      ...this.crates.map((crate) => this.bodyRect(crate)),
-    ];
+    return [...this.playerRects(), ...this.crates.map((crate) => this.bodyRect(crate))];
   }
 
   private playerRects(): Rect[] {
@@ -679,7 +682,5 @@ export class LevelScene extends Phaser.Scene {
 }
 
 function rectsOverlap(a: Rect, b: Rect): boolean {
-  return (
-    a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y
-  );
+  return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
 }

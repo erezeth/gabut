@@ -166,7 +166,10 @@ class GameAudio {
     osc.type = options.type;
     osc.frequency.setValueAtTime(options.from, start);
     if (options.to !== options.from) {
-      osc.frequency.exponentialRampToValueAtTime(Math.max(20, options.to), start + options.duration);
+      osc.frequency.exponentialRampToValueAtTime(
+        Math.max(20, options.to),
+        start + options.duration,
+      );
     }
 
     gain.gain.setValueAtTime(0.0001, start);

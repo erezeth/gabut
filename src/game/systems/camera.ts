@@ -1,6 +1,11 @@
 import type Phaser from 'phaser';
 
-import { computeCameraView, type CameraOptions, type LevelSize, type ViewportSize } from './cameraView';
+import {
+  computeCameraView,
+  type CameraOptions,
+  type LevelSize,
+  type ViewportSize,
+} from './cameraView';
 
 /**
  * Applies {@link computeCameraView} to a Phaser camera with smoothing, so the
@@ -68,6 +73,11 @@ export class SharedCamera {
 
   private apply(): void {
     this.camera.setZoom(this.zoom);
-    this.camera.setScroll(this.scrollX, this.scrollY);
+    // Phaser centres zoom on the camera, so the world view starts inset from
+    // scroll whenever zoom < 1. Compensate so this.scrollX is the top-left of
+    // the visible world, as computeCameraView intends.
+    const insetX = (this.viewport.width - this.viewport.width / this.zoom) / 2;
+    const insetY = (this.viewport.height - this.viewport.height / this.zoom) / 2;
+    this.camera.setScroll(this.scrollX - insetX, this.scrollY - insetY);
   }
 }

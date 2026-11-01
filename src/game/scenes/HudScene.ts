@@ -132,19 +132,11 @@ export class HudScene extends Phaser.Scene {
   // --- building blocks ----------------------------------------------------
 
   private buildTopBar(): void {
-    this.add
-      .rectangle(0, 0, GAME_WIDTH, 22, 0x05070c, 0.55)
-      .setOrigin(0)
-      .setDepth(15);
+    this.add.rectangle(0, 0, GAME_WIDTH, 22, 0x05070c, 0.55).setOrigin(0).setDepth(15);
 
-    this.add
-      .rectangle(0, 22, GAME_WIDTH, 1, COLORS.panelEdge, 0.45)
-      .setOrigin(0)
-      .setDepth(15);
+    this.add.rectangle(0, 22, GAME_WIDTH, 1, COLORS.panelEdge, 0.45).setOrigin(0).setDepth(15);
 
-    this.levelText = this.add
-      .text(10, 6, '', textStyle(7, COLORS.muted))
-      .setDepth(16);
+    this.levelText = this.add.text(10, 6, '', textStyle(7, COLORS.muted)).setDepth(16);
 
     this.timerText = this.add
       .text(GAME_WIDTH / 2, 3, '00:00.00', textStyle(14, COLORS.text))
@@ -166,7 +158,12 @@ export class HudScene extends Phaser.Scene {
     this.updateMuteLabel();
 
     this.add
-      .text(GAME_WIDTH - 10, GAME_HEIGHT - 6, 'ESC PAUSE   R RETRY   M SOUND', textStyle(6, '#5b6678'))
+      .text(
+        GAME_WIDTH - 10,
+        GAME_HEIGHT - 6,
+        'ESC PAUSE   R RETRY   M SOUND',
+        textStyle(6, '#5b6678'),
+      )
       .setOrigin(1, 1)
       .setDepth(16);
   }
@@ -250,9 +247,10 @@ export class HudScene extends Phaser.Scene {
 
   private updateChips(state: HudState): void {
     this.levelText.setText(
-      `LEVEL ${String(state.levelNumber).padStart(2, '0')}/${String(
-        state.totalLevels,
-      ).padStart(2, '0')}  ·  ${state.levelName.toUpperCase()}`,
+      `LEVEL ${String(state.levelNumber).padStart(2, '0')}/${String(state.totalLevels).padStart(
+        2,
+        '0',
+      )}  ·  ${state.levelName.toUpperCase()}`,
     );
 
     this.chips.forEach((chip, index) => {
@@ -268,9 +266,7 @@ export class HudScene extends Phaser.Scene {
     });
 
     const hintStillNeeded =
-      this.overlayMode === 'none' &&
-      !(state.ready[0] && state.ready[1]) &&
-      !!state.hint;
+      this.overlayMode === 'none' && !(state.ready[0] && state.ready[1]) && !!state.hint;
 
     if (hintStillNeeded && this.hintText.text !== state.hint) {
       this.hintText.setText(state.hint);
@@ -344,14 +340,7 @@ export class HudScene extends Phaser.Scene {
     const panel = addPanel(this, 90, 38, 300, 204).setDepth(101);
     this.overlayObjects.push(dimmer, panel);
 
-    this.addOverlayText(
-      GAME_WIDTH / 2,
-      56,
-      'LEVEL CLEAR',
-      textStyle(15, COLORS.success),
-      0.5,
-      103,
-    );
+    this.addOverlayText(GAME_WIDTH / 2, 56, 'LEVEL CLEAR', textStyle(15, COLORS.success), 0.5, 103);
     this.addOverlayText(
       GAME_WIDTH / 2,
       76,
@@ -372,14 +361,7 @@ export class HudScene extends Phaser.Scene {
 
     const isNewBest = data.timeMs <= data.bestMs;
     if (isNewBest) {
-      this.addOverlayText(
-        GAME_WIDTH / 2,
-        150,
-        'NEW BEST!',
-        textStyle(7, COLORS.accent),
-        0.5,
-        103,
-      );
+      this.addOverlayText(GAME_WIDTH / 2, 150, 'NEW BEST!', textStyle(7, COLORS.accent), 0.5, 103);
     }
 
     const items = [];
@@ -411,7 +393,9 @@ export class HudScene extends Phaser.Scene {
     this.addOverlayText(
       GAME_WIDTH / 2,
       228,
-      data.isLast ? 'THANKS FOR PLAYING  ·  ESC CONTINUE' : 'ESC LEVEL SELECT  ·  R REPLAY  ·  M SOUND',
+      data.isLast
+        ? 'THANKS FOR PLAYING  ·  ESC CONTINUE'
+        : 'ESC LEVEL SELECT  ·  R REPLAY  ·  M SOUND',
       textStyle(6, '#5b6678'),
       0.5,
       103,

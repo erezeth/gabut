@@ -148,10 +148,7 @@ export class MenuScene extends Phaser.Scene {
         .setAlpha(0.22)
         .setBlendMode(Phaser.BlendModes.ADD);
 
-      this.add
-        .image(spot.x, 197, TEX.platform)
-        .setDisplaySize(52, 5)
-        .setAlpha(0.9);
+      this.add.image(spot.x, 197, TEX.platform).setDisplaySize(52, 5).setAlpha(0.9);
 
       const sprite = this.add
         .image(spot.x, 183, TEX.player[spot.id].idle)

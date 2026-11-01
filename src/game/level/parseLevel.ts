@@ -114,7 +114,12 @@ export function mergeRuns(tiles: Point[]): Rect[] {
 }
 
 export function tileRect(x: number, y: number, width = 1, height = 1): Rect {
-  return { x: x * TILE_SIZE, y: y * TILE_SIZE, width: width * TILE_SIZE, height: height * TILE_SIZE };
+  return {
+    x: x * TILE_SIZE,
+    y: y * TILE_SIZE,
+    width: width * TILE_SIZE,
+    height: height * TILE_SIZE,
+  };
 }
 
 /**

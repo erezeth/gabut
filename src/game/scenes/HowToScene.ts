@@ -45,9 +45,7 @@ export class HowToScene extends Phaser.Scene {
 
     addDivider(this, 42, 440);
 
-    this.add
-      .text(20, 52, 'CONTROLS', textStyle(8, COLORS.accent))
-      .setOrigin(0, 0);
+    this.add.text(20, 52, 'CONTROLS', textStyle(8, COLORS.accent)).setOrigin(0, 0);
 
     this.add
       .text(20, 68, 'PLAYER 1', { ...textStyle(8, COLORS.playerOne), fontStyle: 'bold' })
@@ -70,9 +68,7 @@ export class HowToScene extends Phaser.Scene {
       .text(20, 151, 'R retry  ·  Esc pause  ·  M sound', textStyle(7, '#a7b4c7'))
       .setOrigin(0, 0);
 
-    this.add
-      .text(248, 52, 'PUZZLE RULES', textStyle(8, COLORS.accent))
-      .setOrigin(0, 0);
+    this.add.text(248, 52, 'PUZZLE RULES', textStyle(8, COLORS.accent)).setOrigin(0, 0);
 
     BULLETS.forEach((text, index) => {
       this.add
@@ -124,7 +120,14 @@ export class HowToScene extends Phaser.Scene {
       { x: 64, icon: TEX.plateOff, iconY: 184, label: 'PLATE', detail: 'holds a door' },
       { x: 152, icon: TEX.door, iconY: 181, tint: 0x4cc9f0, label: 'DOOR', detail: 'same letter' },
       { x: 240, icon: TEX.crate, iconY: 181, label: 'CRATE', detail: 'weighs it down' },
-      { x: 328, icon: TEX.switchOn, iconY: 181, tint: 0x7cf2c8, label: 'LEVER', detail: 'stays on' },
+      {
+        x: 328,
+        icon: TEX.switchOn,
+        iconY: 181,
+        tint: 0x7cf2c8,
+        label: 'LEVER',
+        detail: 'stays on',
+      },
       { x: 416, icon: TEX.exit, iconY: 182, label: 'EXIT', detail: 'both players' },
     ];
 

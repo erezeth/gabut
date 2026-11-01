@@ -97,8 +97,7 @@ export class NavList {
   ): NavList {
     const list = new NavList(scene, x, y, items, options);
     const keys = scene.input.keyboard?.addKeys('UP,DOWN,ENTER,SPACE') as
-      | Record<'UP' | 'DOWN' | 'ENTER' | 'SPACE', Phaser.Input.Keyboard.Key>
-      | undefined;
+      Record<'UP' | 'DOWN' | 'ENTER' | 'SPACE', Phaser.Input.Keyboard.Key> | undefined;
 
     if (!keys) return list;
 
@@ -168,11 +167,7 @@ export class NavList {
       const label = typeof item.label === 'function' ? item.label() : item.label;
       const selected = itemIndex === this.index;
       const prefix = selected ? '› ' : '  ';
-      const color = item.disabled
-        ? '#4b5568'
-        : selected
-          ? COLORS.accent
-          : '#a7b4c7';
+      const color = item.disabled ? '#4b5568' : selected ? COLORS.accent : '#a7b4c7';
 
       text.setText(`${prefix}${label.replace(/^› /, '')}`);
       text.setColor(color);

@@ -3,7 +3,10 @@ import type Phaser from 'phaser';
 import { COLORS } from '../constants';
 
 /** One text style shared by every scene, so the UI stays consistent. */
-export function textStyle(size: number, color: string = COLORS.text): Phaser.Types.GameObjects.Text.TextStyle {
+export function textStyle(
+  size: number,
+  color: string = COLORS.text,
+): Phaser.Types.GameObjects.Text.TextStyle {
   return {
     fontFamily: 'ui-monospace, Consolas, monospace',
     fontSize: `${size}px`,

@@ -2,30 +2,53 @@
 
 Two players, one keyboard. A local co-op puzzle platformer that runs in the browser.
 
-> Status: **M1 in progress**. Two players can already run, jump and reset in a test room.
-> Level data, puzzles and menus are still ahead.
+Five hand-made levels, a shared auto-zooming camera, and a rule set built around
+talking to the person sitting next to you. No server, no accounts, no external
+art or audio files: every sprite and sound is generated in code.
 
-[![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/ci.yml)
+![Gameplay screenshot](docs/screenshot.png)
 
-## Controls
+## Play
 
 | Player | Move      | Jump           |
 | ------ | --------- | -------------- |
 | P1     | `A` / `D` | `W` or `Space` |
 | P2     | `←` / `→` | `↑` or `Enter` |
 
-`R` resets both players to their spawn points.
+`R` retries the level · `Esc` pauses · `M` mutes audio. Menus work with the
+arrow keys and `Enter`, or with the mouse.
 
-Movement tuning: 120 units/s top speed, 1200 units/s² gravity, 100 ms coyote time,
-120 ms jump buffer, and a variable jump height when the jump key is released early.
+The goal is always the same: **both players must stand in the exit**. One player
+in the exit is captured and waits for the other.
+
+## Mechanics
+
+- **Pressure plates** open a door only while something heavy is on them.
+- **Crates** can be pushed and are heavy enough to hold a plate for good.
+- **Levers** latch on the first touch and never turn off.
+- **Doors** share a letter with their plate or lever (`a` opens `A`).
+- **Spikes** and falls restart the level; a crate lost in a pit respawns so the
+  puzzle can never become unsolvable.
+- **Shared camera** keeps both players on screen and zooms out when they split up.
+- **Progress** and best times are stored in `localStorage` on this device.
+
+## Levels
+
+| #   | Name           | Idea                                                           |
+| --- | -------------- | -------------------------------------------------------------- |
+| 01  | First Steps    | Hold a plate for your partner, then swap roles                 |
+| 02  | Heavy Lifting  | Push a crate onto a plate, then jump the gap                   |
+| 03  | Switchboard    | A lever stays on; one player can open the way for both         |
+| 04  | Two-Way Street | Two floors, two plates, two doors; each player helps the other |
+| 05  | The Finale     | Crate, lever, spikes and two doors at once                     |
 
 ## Stack
 
-- **Phaser 4** — scenes, cameras and arcade physics.
-- **TypeScript** in `strict` mode, plus `noUncheckedIndexedAccess`.
+- **Phaser 4** for scenes, cameras and arcade physics.
+- **TypeScript** in `strict` mode with `noUncheckedIndexedAccess`.
 - **Vite** for the dev server and static build.
-- **Vitest** for the pure game logic (level parsing, puzzle rules).
-- **ESLint + Prettier**, GitHub Actions CI, GitHub Pages deploy.
+- **Vitest** for the framework-free game logic.
+- **ESLint + Prettier**, GitHub Actions CI and a GitHub Pages deploy workflow.
 
 ## Getting started
 
@@ -45,66 +68,94 @@ npm test
 npm run format
 ```
 
-## Project layout
+Best played with two people on one full-size keyboard.
+
+## Architecture
+
+The gameplay rules are deliberately kept out of Phaser objects:
+
+- `src/game/level/parseLevel.ts` turns an ASCII map into collision rectangles,
+  spawns, linked doors, plates, levers, crates, spikes and the exit zone.
+- `src/game/systems/jump.ts` owns coyote time and the jump buffer as pure functions.
+- `src/game/systems/cameraView.ts` computes the shared camera zoom and scroll
+  without importing Phaser, so it can be unit-tested in Node.
+- `src/game/systems/progress.ts` validates and persists progress; corrupt storage
+  always falls back to a fresh save.
+- `LevelScene` connects those systems to Phaser, while `HudScene` owns the
+  timer, pause overlay and level-clear overlay.
 
 ```
 src/
-  main.ts                 entry point
+  main.ts                 entry point, audio unlock, dev-only game handle
   style.css               page shell around the canvas
   game/
-    config.ts             Phaser game config (480x270, Scale.FIT, arcade physics)
-    constants.ts          internal resolution, tile size, palette
-    scenes/               Boot, Menu, LevelSelect, Level, Hud (M1+)
-    entities/             Player, Crate, Door, PressurePlate, Lever (M2+)
-    level/                parser + level data (M3+)
-    systems/              input keymaps, shared camera, audio (M1+)
-    util/                 framework-free helpers, covered by unit tests
+    config.ts             Phaser config: 480x270, Scale.FIT, pixelArt
+    constants.ts          resolution, tile size, physics tuning, palette
+    assets/textures.ts    every texture and animation, drawn at boot
+    entities/             Player, Crate
+    level/                ASCII parser + the five level maps
+    scenes/               Boot, Menu, LevelSelect, HowTo, Level, Hud
+    systems/              input, jump, camera, audio, progress
+    ui/                   keyboard-first NavList, panels, backdrop, theme
+    util/                 small framework-free helpers
 tests/                    Vitest specs for pure logic
 ```
 
 ## Design decisions
 
-- **480×270 internal resolution, `Scale.FIT` + `pixelArt`.** One world unit equals one
-  art pixel; the canvas is upscaled by the browser, so no asset ever needs to be re-exported
-  at a different size.
-- **Shared camera with auto-zoom, not split-screen.** Puzzle levels have to be readable as a
-  whole so the two players can plan out loud. Split-screen stays an optional stretch goal.
-- **Levels are data, not code.** ASCII maps are parsed into a `LevelState`; all puzzle rules
-  are plain functions that can be unit-tested without Phaser.
-- **Keyboard is mapped in one place** (`systems/input.ts`) so two players never compete for
-  the same key and the UI can be remapped later.
+- **480×270 internal resolution, `Scale.FIT` + `pixelArt`.** One world unit is one
+  art pixel, so the canvas can scale to any window without re-exporting anything.
+- **Shared camera, not split-screen.** Puzzles are about planning out loud. A
+  split screen would hide the other player's half of the solution.
+- **Levels are data, not code.** `docs/level-format.md` documents every tile and
+  the parser rejects broken maps with a readable error instead of shipping them.
+- **All art and audio are generated.** Textures are canvas drawings created at
+  boot; music and effects are Web Audio oscillators and noise. The build has no
+  image, font or sound assets to download.
+- **Movement forgiveness.** 100 ms of coyote time, a 120 ms jump buffer, variable
+  jump height and a slightly narrower collision box keep the platforming fair.
+- **Crates feel direct.** Players are not `pushable` in arcade physics, so their
+  full speed transfers to a crate. If both bodies were pushable, Phaser would
+  average their velocities and a heavy crate would crawl.
 
-## Roadmap
+## Testing
 
-- [x] **M0** — scaffold, CI, deploy pipeline
-- [ ] **M1** — two-player controller, tile collision, camera auto-zoom
-  - [x] keymaps for both players, arcade physics, jump feel (coyote time, buffer)
-  - [x] hand-placed test room + reset
-  - [ ] camera follow/auto-zoom (waits for levels larger than one screen)
-- [ ] **M2** — pressure plates, doors, crates, levers (+ unit tests)
-- [ ] **M3** — ASCII level parser, 5 levels, respawn/restart
-- [ ] **M4** — menu, level select, progress in `localStorage`, HUD, pause
-- [ ] **M5** — juice, sound effects, pixel art pass, GIF in this README
-- [ ] **M6** — deploy to GitHub Pages, playtest with two people on one keyboard
-
-## Debugging
-
-In dev mode the Phaser game instance is exposed as `window.__coopGame`; production builds
-strip it. That is what the headless smoke tests use to read real player positions after
-simulated key presses:
-
-```js
-const scene = window.__coopGame.scene.getScene('Level');
-const players = scene.children.list.filter((o) => o.texture?.key?.startsWith('player-'));
+```bash
+npm test           # 51 unit tests: parser, levels, progress, jump, camera, math
+npm run typecheck
+npm run lint
 ```
+
+The shipped levels are validated in `tests/levels.test.ts`: rectangular, 17 rows
+tall, every door linked to a source and every source linked to a door. During
+development the game was also driven through Chrome DevTools Protocol with real
+key events to verify plate/door behaviour, crate pushing, lever latching, camera
+zoom, pause/retry, level completion and persistence. The production build strips
+the dev-only `window.__coopGame` handle.
+
+## Authoring levels
+
+See [`docs/level-format.md`](docs/level-format.md) for the tile legend, parser
+validation and a solvable example. Add a map to `LEVELS` in
+`src/game/level/levels.ts`; the tests pick it up automatically.
 
 ## Deploying
 
-The build uses a relative base path, so it works on GitHub Pages under any repository name.
-Push to `main` and `.github/workflows/deploy.yml` builds and publishes `dist/` automatically.
-Enable it once in **Settings → Pages → Source: GitHub Actions**.
+The build uses a relative base path, so it works on GitHub Pages under any
+repository name. Push to `main` and `.github/workflows/deploy.yml` builds and
+publishes `dist/`. Enable it once in **Settings → Pages → Source: GitHub Actions**.
+
+## Roadmap
+
+- [x] **M1** — two-player controller, tile collision, jump feel
+- [x] **M2** — pressure plates, doors, crates, latching levers
+- [x] **M3** — ASCII parser, five levels, death and restart flow
+- [x] **M4** — menu, level select, progress persistence, HUD, pause
+- [x] **M5** — procedural pixel art, synthesized audio, camera polish, screen shake
+- [x] **M6** — shared-camera auto-zoom, full playtest pass, Pages deployment
 
 ## Credits
 
-Placeholder visuals are flat rectangles. The pixel art pass in M5 will use free assets from
-[Kenney](https://kenney.nl/), credited here when added.
+Built with [Phaser 4](https://phaser.io/), [TypeScript](https://www.typescriptlang.org/),
+[Vite](https://vite.dev/) and [Vitest](https://vitest.dev/). All in-game art and
+audio are generated by this project; no third-party asset packs are used.
