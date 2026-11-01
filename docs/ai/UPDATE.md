@@ -1,0 +1,2 @@
+- [ ] Buat lebih kompatible di hp.
+- [ ] Tambahkan keybind `P` untuk pause game di dekstop dan tambahkan tombol pause di mobile.

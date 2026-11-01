@@ -158,15 +158,6 @@ The build uses a relative base path, so it works on GitHub Pages under any
 repository name. Push to `main` and `.github/workflows/deploy.yml` builds and
 publishes `dist/`. Enable it once in **Settings → Pages → Source: GitHub Actions**.
 
-## Roadmap
-
-- [x] **M1** — two-player controller, tile collision, jump feel
-- [x] **M2** — pressure plates, doors, crates, latching levers
-- [x] **M3** — ASCII parser, five levels, death and restart flow
-- [x] **M4** — menu, level select, progress persistence, HUD, pause
-- [x] **M5** — procedural pixel art, synthesized audio, camera polish, screen shake
-- [x] **M6** — shared-camera auto-zoom, full playtest pass, Pages deployment
-
 ## Credits
 
 Built with [Phaser 4](https://phaser.io/), [TypeScript](https://www.typescriptlang.org/),
