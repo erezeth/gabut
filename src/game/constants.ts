@@ -7,6 +7,15 @@
 export const GAME_WIDTH = 480;
 export const GAME_HEIGHT = 270;
 
+/**
+ * The canvas is rendered at twice the design size so text is rasterised at a
+ * readable pixel size instead of being magnified from a 480px buffer. Cameras
+ * zoom by this factor; world coordinates stay in design units.
+ */
+export const RENDER_SCALE = 2;
+export const RENDER_WIDTH = GAME_WIDTH * RENDER_SCALE;
+export const RENDER_HEIGHT = GAME_HEIGHT * RENDER_SCALE;
+
 /** Size of one level tile in world units. */
 export const TILE_SIZE = 16;
 
@@ -56,3 +65,7 @@ export const STORAGE_KEYS = {
   progress: 'coop-puzzle:progress-v1',
   muted: 'coop-puzzle:muted-v1',
 } as const;
+
+/** Touch-first device: on-screen pads replace the keyboard hints. */
+export const TOUCH =
+  typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;

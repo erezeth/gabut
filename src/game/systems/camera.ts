@@ -16,6 +16,7 @@ export class SharedCamera {
   private readonly level: LevelSize;
   private readonly viewport: ViewportSize;
   private readonly options: CameraOptions;
+  private readonly renderScale: number;
 
   private zoom: number;
   private scrollX: number;
@@ -26,11 +27,13 @@ export class SharedCamera {
     level: LevelSize,
     viewport: ViewportSize,
     options: CameraOptions = {},
+    renderScale = 1,
   ) {
     this.camera = camera;
     this.level = level;
     this.viewport = viewport;
     this.options = options;
+    this.renderScale = renderScale;
 
     const initial = computeCameraView([], level, viewport, options);
     this.zoom = initial.zoom;
@@ -60,11 +63,12 @@ export class SharedCamera {
 
   /** Small punch-in used when a level is cleared. */
   punch(amount = 0.04, duration = 220): void {
-    this.camera.zoomTo(this.camera.zoom + amount, duration, 'Sine.easeOut');
+    this.camera.zoomTo(this.camera.zoom * (1 + amount), duration, 'Sine.easeOut');
   }
 
   shake(duration = 140, intensity = 0.004): void {
-    this.camera.shake(duration, intensity);
+    // Shake offsets are in render pixels, so scale with the render buffer.
+    this.camera.shake(duration, intensity * this.renderScale);
   }
 
   get worldView(): Phaser.Geom.Rectangle {
@@ -72,12 +76,16 @@ export class SharedCamera {
   }
 
   private apply(): void {
-    this.camera.setZoom(this.zoom);
-    // Phaser centres zoom on the camera, so the world view starts inset from
-    // scroll whenever zoom < 1. Compensate so this.scrollX is the top-left of
-    // the visible world, as computeCameraView intends.
-    const insetX = (this.viewport.width - this.viewport.width / this.zoom) / 2;
-    const insetY = (this.viewport.height - this.viewport.height / this.zoom) / 2;
+    const scale = this.renderScale;
+    const width = this.viewport.width * scale;
+    const height = this.viewport.height * scale;
+
+    this.camera.setZoom(this.zoom * scale);
+    // Phaser centres zoom on the camera viewport, so the world view starts inset
+    // from scroll whenever the camera is not at 1:1. Compensate so this.scrollX
+    // stays the top-left of the visible world, as computeCameraView intends.
+    const insetX = (width - width / (this.zoom * scale)) / 2;
+    const insetY = (height - height / (this.zoom * scale)) / 2;
     this.camera.setScroll(this.scrollX - insetX, this.scrollY - insetY);
   }
 }

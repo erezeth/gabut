@@ -3,8 +3,11 @@ import Phaser from 'phaser';
 import './style.css';
 import { gameConfig } from './game/config';
 import { audio } from './game/systems/audio';
+import { installTouchControls } from './game/systems/touch';
 
 const game = new Phaser.Game(gameConfig);
+
+installTouchControls();
 
 // Browsers only allow audio after a gesture. Unlock on whichever comes first;
 // audio.unlock() is idempotent, so the leftover listener is harmless.

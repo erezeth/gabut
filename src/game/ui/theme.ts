@@ -1,6 +1,6 @@
 import type Phaser from 'phaser';
 
-import { COLORS } from '../constants';
+import { COLORS, GAME_HEIGHT, GAME_WIDTH, RENDER_SCALE } from '../constants';
 
 /** One text style shared by every scene, so the UI stays consistent. */
 export function textStyle(
@@ -11,7 +11,19 @@ export function textStyle(
     fontFamily: 'ui-monospace, Consolas, monospace',
     fontSize: `${size}px`,
     color,
+    // Rasterise glyphs at the render scale; without this the text is drawn at
+    // design size and magnified, which is what made the UI look blurry.
+    resolution: RENDER_SCALE,
   };
+}
+
+/**
+ * Menus and the HUD lay out in the 480x270 design grid. Zooming the scene
+ * camera by the render scale keeps those coordinates and fills the bigger
+ * canvas at the same time.
+ */
+export function zoomUiCamera(scene: Phaser.Scene): void {
+  scene.cameras.main.setZoom(RENDER_SCALE).centerOn(GAME_WIDTH / 2, GAME_HEIGHT / 2);
 }
 
 /** Dim, full-screen rectangle used behind menus and overlays. */

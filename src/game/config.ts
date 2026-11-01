@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 
-import { COLORS, GAME_HEIGHT, GAME_WIDTH, PHYSICS } from './constants';
+import { COLORS, PHYSICS, RENDER_HEIGHT, RENDER_WIDTH } from './constants';
 import { BootScene } from './scenes/BootScene';
 import { HowToScene } from './scenes/HowToScene';
 import { HudScene } from './scenes/HudScene';
@@ -11,8 +11,8 @@ import { MenuScene } from './scenes/MenuScene';
 export const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   parent: 'game',
-  width: GAME_WIDTH,
-  height: GAME_HEIGHT,
+  width: RENDER_WIDTH,
+  height: RENDER_HEIGHT,
   backgroundColor: COLORS.background,
   pixelArt: true,
   roundPixels: true,

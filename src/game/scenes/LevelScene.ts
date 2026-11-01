@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 
 import { TEX } from '../assets/textures';
-import { COLORS, GAME_HEIGHT, GAME_WIDTH, SCENES, TILE_SIZE } from '../constants';
+import { COLORS, GAME_HEIGHT, GAME_WIDTH, RENDER_SCALE, SCENES, TILE_SIZE } from '../constants';
 import { Crate } from '../entities/Crate';
 import { Player, type PlayerHooks } from '../entities/Player';
 import { LEVELS } from '../level/levels';
@@ -139,6 +139,8 @@ export class LevelScene extends Phaser.Scene {
       this.cameras.main,
       { width: this.level.width, height: this.level.height },
       { width: GAME_WIDTH, height: GAME_HEIGHT },
+      {},
+      RENDER_SCALE,
     );
     this.cameraRig.snap(this.playerPoints());
     this.cameras.main.fadeIn(180, 6, 8, 12);

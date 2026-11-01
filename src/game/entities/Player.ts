@@ -68,7 +68,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     }
     this.wasGrounded = grounded;
 
-    const jumpDown = isDown(this.controls.jump);
+    const jumpDown = isDown(this.controls.jump) || this.controls.touch.jump;
     const jumpJustPressed = jumpDown && !this.wasJumpDown;
     const jumpJustReleased = !jumpDown && this.wasJumpDown;
     this.wasJumpDown = jumpDown;
@@ -79,7 +79,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.jumpPressedAt = time;
     }
 
-    const direction = axisFromKeys(this.controls.left.isDown, this.controls.right.isDown);
+    const direction = axisFromKeys(
+      this.controls.left.isDown || this.controls.touch.left,
+      this.controls.right.isDown || this.controls.touch.right,
+    );
 
     if (direction === 0) {
       this.setAccelerationX(0);

@@ -15,8 +15,11 @@ art or audio files: every sprite and sound is generated in code.
 | P1     | `A` / `D` | `W` or `Space` |
 | P2     | `←` / `→` | `↑` or `Enter` |
 
-`R` retries the level · `Esc` pauses · `M` mutes audio. Menus work with the
-arrow keys and `Enter`, or with the mouse.
+`R` retries the level · `Esc` pauses · `M` mutes audio · `F` fullscreen. Menus
+work with the arrow keys and `Enter`, or with the mouse.
+
+On phones and tablets the game shows one thumb pad per player in landscape, plus
+pause and fullscreen buttons. Both players share the same screen and device.
 
 The goal is always the same: **both players must stand in the exit**. One player
 in the exit is captured and waits for the other.
@@ -81,6 +84,8 @@ The gameplay rules are deliberately kept out of Phaser objects:
   without importing Phaser, so it can be unit-tested in Node.
 - `src/game/systems/progress.ts` validates and persists progress; corrupt storage
   always falls back to a fresh save.
+- `src/game/systems/touch.ts` builds the on-screen pads and the pause/fullscreen
+  buttons, writing into the same per-player input the keyboard uses.
 - `LevelScene` connects those systems to Phaser, while `HudScene` owns the
   timer, pause overlay and level-clear overlay.
 
@@ -95,7 +100,7 @@ src/
     entities/             Player, Crate
     level/                ASCII parser + the five level maps
     scenes/               Boot, Menu, LevelSelect, HowTo, Level, Hud
-    systems/              input, jump, camera, audio, progress
+    systems/              input, jump, camera, audio, progress, touch, actions
     ui/                   keyboard-first NavList, panels, backdrop, theme
     util/                 small framework-free helpers
 tests/                    Vitest specs for pure logic
@@ -103,10 +108,15 @@ tests/                    Vitest specs for pure logic
 
 ## Design decisions
 
-- **480×270 internal resolution, `Scale.FIT` + `pixelArt`.** One world unit is one
-  art pixel, so the canvas can scale to any window without re-exporting anything.
+- **480×270 design grid, 960×540 render buffer.** Levels and UI lay out in the
+  small grid, but the canvas renders at twice that size and every camera zooms by
+  two. World art stays chunky pixel art; text is rasterised at a readable size
+  instead of being magnified, which is what keeps the UI sharp on a big screen.
 - **Shared camera, not split-screen.** Puzzles are about planning out loud. A
   split screen would hide the other player's half of the solution.
+- **Touch pads reuse the keyboard input path.** `touch.ts` writes into the same
+  per-player state the key bindings feed, so movement, coyote time and the jump
+  buffer behave identically on a phone.
 - **Levels are data, not code.** `docs/level-format.md` documents every tile and
   the parser rejects broken maps with a readable error instead of shipping them.
 - **All art and audio are generated.** Textures are canvas drawings created at
@@ -121,7 +131,7 @@ tests/                    Vitest specs for pure logic
 ## Testing
 
 ```bash
-npm test           # 51 unit tests: parser, levels, progress, jump, camera, math
+npm test           # 52 unit tests: parser, levels, progress, jump, camera, math
 npm run typecheck
 npm run lint
 ```
@@ -129,9 +139,12 @@ npm run lint
 The shipped levels are validated in `tests/levels.test.ts`: rectangular, 17 rows
 tall, every door linked to a source and every source linked to a door. During
 development the game was also driven through Chrome DevTools Protocol with real
-key events to verify plate/door behaviour, crate pushing, lever latching, camera
-zoom, pause/retry, level completion and persistence. The production build strips
-the dev-only `window.__coopGame` handle.
+key events and pointer events to verify plate/door behaviour, crate pushing,
+lever latching, camera zoom, pause/retry, level completion, persistence and the
+touch pads. The production build strips the dev-only `window.__coopGame` handle.
+
+`docs/ai/` holds the brief for AI coding models: ground rules, coordinate
+systems, verification recipes and the task breakdown.
 
 ## Authoring levels
 

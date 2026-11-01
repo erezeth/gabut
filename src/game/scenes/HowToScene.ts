@@ -3,7 +3,7 @@ import Phaser from 'phaser';
 import { TEX } from '../assets/textures';
 import { COLORS, GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { addBackdrop, addDivider } from '../ui/backdrop';
-import { addPanel, textStyle } from '../ui/theme';
+import { addPanel, textStyle, zoomUiCamera } from '../ui/theme';
 
 const BULLETS = [
   'Plates open a door only while held down.',
@@ -27,6 +27,7 @@ export class HowToScene extends Phaser.Scene {
   }
 
   create(): void {
+    zoomUiCamera(this);
     addBackdrop(this);
 
     const back = this.add
@@ -65,7 +66,7 @@ export class HowToScene extends Phaser.Scene {
       .text(20, 138, 'GENERAL', { ...textStyle(8, '#a7b4c7'), fontStyle: 'bold' })
       .setOrigin(0, 0);
     this.add
-      .text(20, 151, 'R retry  ·  Esc pause  ·  M sound', textStyle(7, '#a7b4c7'))
+      .text(20, 151, 'R retry  ·  Esc pause  ·  M sound  ·  F fullscreen', textStyle(7, '#a7b4c7'))
       .setOrigin(0, 0);
 
     this.add.text(248, 52, 'PUZZLE RULES', textStyle(8, COLORS.accent)).setOrigin(0, 0);

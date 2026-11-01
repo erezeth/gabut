@@ -7,7 +7,7 @@ import { audio } from '../systems/audio';
 import { isUnlocked, loadProgress, type Progress } from '../systems/progress';
 import { NavList } from '../ui/NavList';
 import { addBackdrop, addDivider } from '../ui/backdrop';
-import { formatTime, textStyle } from '../ui/theme';
+import { formatTime, textStyle, zoomUiCamera } from '../ui/theme';
 
 /**
  * Title screen. The "Continue" entry jumps straight into the first level the
@@ -22,6 +22,7 @@ export class MenuScene extends Phaser.Scene {
   }
 
   create(): void {
+    zoomUiCamera(this);
     addBackdrop(this);
 
     const progress = this.currentProgress();

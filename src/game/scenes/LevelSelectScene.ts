@@ -6,7 +6,7 @@ import { audio } from '../systems/audio';
 import { isUnlocked, loadProgress, saveProgress, type Progress } from '../systems/progress';
 import { NavList, type NavItem } from '../ui/NavList';
 import { addBackdrop } from '../ui/backdrop';
-import { addPanel, formatTime, textStyle } from '../ui/theme';
+import { addPanel, formatTime, textStyle, zoomUiCamera } from '../ui/theme';
 
 /**
  * Level browser with best times, locks and a two-step progress reset.
@@ -22,6 +22,7 @@ export class LevelSelectScene extends Phaser.Scene {
   }
 
   create(): void {
+    zoomUiCamera(this);
     addBackdrop(this);
     this.resetArmed = false;
 

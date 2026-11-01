@@ -1,10 +1,11 @@
 import Phaser from 'phaser';
 
-import { COLORS, GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
+import { COLORS, GAME_HEIGHT, GAME_WIDTH, SCENES, TOUCH } from '../constants';
 import { LEVELS } from '../level/levels';
 import { audio } from '../systems/audio';
 import { NavList } from '../ui/NavList';
-import { addDimmer, addPanel, formatTime, textStyle } from '../ui/theme';
+import { addDimmer, addPanel, formatTime, textStyle, zoomUiCamera } from '../ui/theme';
+import { setPauseHandler } from '../systems/actions';
 import type { LevelScene } from './LevelScene';
 
 export interface HudState {
@@ -64,6 +65,7 @@ export class HudScene extends Phaser.Scene {
   }
 
   create(): void {
+    zoomUiCamera(this);
     this.levelScene = this.scene.get(SCENES.level) as LevelScene;
     this.overlayMode = 'none';
     this.overlayObjects = [];
@@ -74,6 +76,10 @@ export class HudScene extends Phaser.Scene {
     this.buildHint();
     this.buildIntro();
     this.registerKeys();
+
+    // Touch players have no Esc key; the on-screen pause button comes through here.
+    setPauseHandler(() => this.handlePause());
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => setPauseHandler(undefined));
   }
 
   override update(): void {
@@ -84,13 +90,7 @@ export class HudScene extends Phaser.Scene {
     this.updateChips(state);
 
     if (this.escKey && Phaser.Input.Keyboard.JustDown(this.escKey)) {
-      if (this.overlayMode === 'pause') {
-        this.levelScene.resumeGame();
-      } else if (this.overlayMode === 'complete') {
-        this.levelScene.exitToLevels();
-      } else {
-        this.levelScene.requestPause();
-      }
+      this.handlePause();
     }
 
     if (this.muteKey && Phaser.Input.Keyboard.JustDown(this.muteKey)) {
@@ -161,7 +161,7 @@ export class HudScene extends Phaser.Scene {
       .text(
         GAME_WIDTH - 10,
         GAME_HEIGHT - 6,
-        'ESC PAUSE   R RETRY   M SOUND',
+        TOUCH ? '' : 'ESC PAUSE   R RETRY   M SOUND   F FULLSCREEN',
         textStyle(6, '#5b6678'),
       )
       .setOrigin(1, 1)
@@ -245,6 +245,17 @@ export class HudScene extends Phaser.Scene {
 
   // --- per-frame updates --------------------------------------------------
 
+  private handlePause(): void {
+    if (!this.levelScene) return;
+    if (this.overlayMode === 'pause') {
+      this.levelScene.resumeGame();
+    } else if (this.overlayMode === 'complete') {
+      this.levelScene.exitToLevels();
+    } else {
+      this.levelScene.requestPause();
+    }
+  }
+
   private updateChips(state: HudState): void {
     this.levelText.setText(
       `LEVEL ${String(state.levelNumber).padStart(2, '0')}/${String(state.totalLevels).padStart(
@@ -285,7 +296,7 @@ export class HudScene extends Phaser.Scene {
 
   private updateMuteLabel(): void {
     this.muteText
-      .setText(audio.isMuted ? 'M: OFF' : 'M: ON')
+      .setText(audio.isMuted ? (TOUCH ? 'SOUND OFF' : 'M: OFF') : TOUCH ? 'SOUND ON' : 'M: ON')
       .setColor(audio.isMuted ? '#7d8899' : '#b8ffe8');
   }
 
@@ -328,7 +339,7 @@ export class HudScene extends Phaser.Scene {
     this.addOverlayText(
       GAME_WIDTH / 2,
       191,
-      'ESC RESUME  ·  R RETRY  ·  M SOUND',
+      TOUCH ? 'TAP AN OPTION TO CONTINUE' : 'ESC RESUME  ·  R RETRY  ·  M SOUND',
       textStyle(6, '#5b6678'),
       0.5,
       103,
@@ -393,9 +404,11 @@ export class HudScene extends Phaser.Scene {
     this.addOverlayText(
       GAME_WIDTH / 2,
       228,
-      data.isLast
-        ? 'THANKS FOR PLAYING  ·  ESC CONTINUE'
-        : 'ESC LEVEL SELECT  ·  R REPLAY  ·  M SOUND',
+      TOUCH
+        ? 'THANKS FOR PLAYING  ·  TAP AN OPTION TO CONTINUE'
+        : data.isLast
+          ? 'THANKS FOR PLAYING  ·  ESC CONTINUE'
+          : 'ESC LEVEL SELECT  ·  R REPLAY  ·  M SOUND',
       textStyle(6, '#5b6678'),
       0.5,
       103,
